@@ -1,2 +1,4 @@
 .env
 myvenv
+/projects/chatbot.db-shm
+/projects/chatbot.db-wal
