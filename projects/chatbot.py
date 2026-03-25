@@ -34,12 +34,22 @@ chatbot=graph.compile(checkpointer=checkpointer)
 
 
 thread_id='1'
+config={'configurable':{'thread_id':thread_id}}
+chat_history = list()
+for checkpoint_tuple in checkpointer.list(config=config):
+    channel_values = checkpoint_tuple.checkpoint.get('channel_values', {})
+    messages = channel_values.get('messages',[])
+    for msg in messages:
+        chat_history.insert(0,msg)
 
+for msg in chat_history:
+    role = msg.__class__.__name__
+    print(f'{"You" if role=="HumanMessage" else "Ai"}: {msg.content}')
 while True:
     user_message = input("Type here: ")
     if user_message.strip().lower() in ['exit', 'quit', 'bye']:
         break
-    config={'configurable':{'thread_id':thread_id}}
+
     print("AI: ", end="", flush=True)
     for message_chunk,metadata in chatbot.stream({'messages':HumanMessage(content=user_message)}, config=config, stream_mode='messages'):
         if message_chunk.content:
